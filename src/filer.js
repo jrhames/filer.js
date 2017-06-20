@@ -36,10 +36,15 @@ navigator.persistentStorage = navigator.persistentStorage ||
 self.BlobBuilder = self.BlobBuilder || self.MozBlobBuilder ||
                    self.WebKitBlobBuilder;
 
-// Prevent errors in browsers that don't support FileError.
-if (self.FileError === undefined) {
+debugger;
+// Prevent errors in browsers that don't support FileError or have removed it in favor of DOMException
+if (self.FileError === undefined || (self.FileError && self.FileError.NOT_FOUND_ERR)) {
   var FileError = function() {};
-  FileError.prototype.prototype = Error.prototype;
+  if (self.DOMException && self.DOMException.NOT_FOUND_ERR) {
+    FileError = DOMException;
+  } else {
+    FileError.prototype.prototype = Error.prototype;
+  }
 }
 
 var Util = {
